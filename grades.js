@@ -12,7 +12,7 @@ router.get("/", async (_req, res) => {
         const data = JSON.parse(await readFile(global.fileName));
         res.send(data);
     } catch (err) {
-        console.log(err);
+        res.status(400).send({ error: err.message });
     }
 });
 
@@ -22,7 +22,7 @@ router.get("/:id", async (req, res) => {
         const grade = data.grades.find(g => g.id === parseInt(req.params.id));
         res.send(grade);
     } catch (err) {
-        console.log(err);
+        res.status(400).send({ error: err.message });
     }
 });
 
@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
         await writeFile(global.fileName, JSON.stringify(data), null, 2);
         res.send(newGrade);
     } catch (err) {
-
+        res.status(400).send({ error: err.message });
     }
 });
 
@@ -51,7 +51,7 @@ router.put("/", async (req, res) => {
 
         res.send(data.grades[index]);
     } catch (err) {
-
+        res.status(400).send({ error: err.message });
     }
 });
 
@@ -62,7 +62,7 @@ router.delete("/:id", async (req, res) => {
         await writeFile(global.fileName, JSON.stringify(data), null, 2);
         res.end();
     } catch (err) {
-        console.log(err);
+        res.status(400).send({ error: err.message });
     }
 });
 
@@ -72,13 +72,12 @@ router.post("/totalByStudentAndSubject", async (req, res) => {
         const student = data.grades.filter(s => {
             return (s.student === req.body.student) && (s.subject === req.body.subject);
         });
-        let total = await student.reduce( (acc, curr) => {
+        let total = await student.reduce((acc, curr) => {
             return acc + curr.value;
         }, 0);
-        res.send({total});
+        res.send({ total });
     } catch (err) {
-        console.log(err);
-        res.send(err);
+        res.status(400).send({ error: err.message });
     }
 
 });
@@ -89,13 +88,13 @@ router.post("/averageBySubjectAndType", async (req, res) => {
         const subjects = data.grades.filter(s => {
             return (s.subject === req.body.subject) && (s.type === req.body.type);
         });
-        let total = await subjects.reduce( (acc, curr) => {
+        let total = await subjects.reduce((acc, curr) => {
             return acc + curr.value;
         }, 0);
         let average = total / subjects.length;
-        res.send({average});
+        res.send({ average });
     } catch (err) {
-        res.send(err);
+        res.status(400).send({ error: err.message });
     }
 
 });
@@ -106,12 +105,12 @@ router.post("/bestsValuesBySubjectType", async (req, res) => {
         let subjectsType = data.grades.filter(s => {
             return (s.subject === req.body.subject) && (s.type === req.body.type);
         });
-        subjectsType = subjectsType.sort( (a,b) => {
+        subjectsType = subjectsType.sort((a, b) => {
             return b.value - a.value
         });
-        res.send(subjectsType.splice(0,3));
+        res.send(subjectsType.splice(0, 3));
     } catch (err) {
-        res.send(err);
+        res.status(400).send({ error: err.message });
     }
 
 });
