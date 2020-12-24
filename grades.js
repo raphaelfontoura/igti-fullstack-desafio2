@@ -66,16 +66,16 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-router.get("/:student/:subject", async (req, res) => {
+router.post("/totalByStudentAndSubject", async (req, res) => {
     try {
         const data = JSON.parse(await readFile(global.fileName));
-        let filtro = data.grades.filter(s => {
-            return (s.student === req.params.student) && (s.subject === req.params.subject);
+        const student = data.grades.filter(s => {
+            return (s.student === req.body.student) && (s.subject === req.body.subject);
         });
-        let value = await filtro.reduce( (acc, curr) => {
+        let total = await student.reduce( (acc, curr) => {
             return acc + curr.value;
         }, 0);
-        res.send(JSON.stringify(value));
+        res.send({total});
     } catch (err) {
         console.log(err);
         res.send(err);
@@ -83,36 +83,34 @@ router.get("/:student/:subject", async (req, res) => {
 
 });
 
-router.get("/subject/:subject/:type", async (req, res) => {
+router.post("/mediaBySubjectAndType", async (req, res) => {
     try {
         const data = JSON.parse(await readFile(global.fileName));
-        let filtro = data.grades.filter(s => {
-            return (s.subject === req.params.subject) && (s.type === req.params.type);
+        const subjects = data.grades.filter(s => {
+            return (s.subject === req.body.subject) && (s.type === req.body.type);
         });
-        let value = await filtro.reduce( (acc, curr) => {
+        let total = await subjects.reduce( (acc, curr) => {
             return acc + curr.value;
         }, 0);
-        let media = value / filtro.length;
-        res.send(JSON.stringify(media));
+        let media = total / subjects.length;
+        res.send({media});
     } catch (err) {
-        console.log(err);
         res.send(err);
     }
 
 });
 
-router.get("/best/:subject/:type", async (req, res) => {
+router.post("/bestsValuesBySubjectType", async (req, res) => {
     try {
         const data = JSON.parse(await readFile(global.fileName));
-        let filtro = data.grades.filter(s => {
-            return (s.subject === req.params.subject) && (s.type === req.params.type);
+        let subjectsType = data.grades.filter(s => {
+            return (s.subject === req.body.subject) && (s.type === req.body.type);
         });
-        filtro = filtro.sort( (a,b) => {
+        subjectsType = subjectsType.sort( (a,b) => {
             return b.value - a.value
         });
-        res.send(filtro.splice(0,3));
+        res.send(subjectsType.splice(0,3));
     } catch (err) {
-        console.log(err);
         res.send(err);
     }
 
