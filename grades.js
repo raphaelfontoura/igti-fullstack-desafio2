@@ -83,7 +83,7 @@ router.post("/totalByStudentAndSubject", async (req, res) => {
 
 });
 
-router.post("/mediaBySubjectAndType", async (req, res) => {
+router.post("/averageBySubjectAndType", async (req, res) => {
     try {
         const data = JSON.parse(await readFile(global.fileName));
         const subjects = data.grades.filter(s => {
@@ -92,8 +92,8 @@ router.post("/mediaBySubjectAndType", async (req, res) => {
         let total = await subjects.reduce( (acc, curr) => {
             return acc + curr.value;
         }, 0);
-        let media = total / subjects.length;
-        res.send({media});
+        let average = total / subjects.length;
+        res.send({average});
     } catch (err) {
         res.send(err);
     }
